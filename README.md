@@ -1,2 +1,2 @@
 # MyCodeSnippets
-代码片段
+design-patterns 设计模式相关
