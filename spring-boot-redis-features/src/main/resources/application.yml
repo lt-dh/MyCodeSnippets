@@ -1,0 +1,9 @@
+spring:
+  # 对应 RedisProperties 类
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+logging:
+  level:
+    root: info
