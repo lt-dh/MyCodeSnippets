@@ -1,4 +1,4 @@
-package com.lt.HeyperLogLog;
+package com.lt.heyperLogLog;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -13,21 +13,19 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class UVMain {
 
-    private static final String prefix = "prefix:";
-    private final RedisTemplate redisTemplate;
+    private static final String PREFIX = "prefix:";
+    private final RedisTemplate<String,Integer> redisTemplate;
 
     private Long uv(Integer pageId, Integer userId) {
-        String key = prefix + pageId;
+        String key = PREFIX + pageId;
         return redisTemplate.opsForHyperLogLog().add(key, userId);
     }
 
     /**
      * 统计页面的UV
-     * @param pageId
-     * @return
      */
     private Long getUv(Integer pageId) {
-        String key = prefix + pageId;
+        String key = PREFIX + pageId;
         return redisTemplate.opsForHyperLogLog().size(key);
     }
 }

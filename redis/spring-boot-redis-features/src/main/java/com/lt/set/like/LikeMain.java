@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * 点赞实现
+ *
  * @author liutong
  * @date 2024年03月18日 10:48
  */
@@ -13,21 +14,19 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class LikeMain {
 
-    private final RedisTemplate redisTemplate;
+    private final RedisTemplate<String, Integer> redisTemplate;
 
     private final String prefix = "like:article:";
 
 
     public Long like(Long articleId, Integer... userIds) {
         String key = prefix + articleId;
-        Long add = redisTemplate.opsForSet().add(key, userIds);
-        return add;
+        return redisTemplate.opsForSet().add(key, userIds);
     }
 
     public Long likeNum(Long articleId) {
         String key = prefix + articleId;
-        Long size = redisTemplate.opsForSet().size(key);
-        return size;
+        return redisTemplate.opsForSet().size(key);
     }
 
     public Boolean isLike(Long articleId, Integer userId) {

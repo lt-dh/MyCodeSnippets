@@ -22,13 +22,13 @@ public class AntiShakingMain {
 
     private final StringRedisTemplate stringRedisTemplate;
 
-    @PostConstruct
-    public void doIt(){
-        // 模拟两次请求
-        for (int i = 0; i < 2; i++) {
-            sendRequest();
-        }
-    }
+//    @PostConstruct
+//    public void doIt(){
+//        // 模拟两次请求
+//        for (int i = 0; i < 2; i++) {
+//            sendRequest();
+//        }
+//    }
     public void sendRequest(){
         // 从请求参数中生成该请求唯一key
         String key = "first";

@@ -1,7 +1,7 @@
 package round;
 
 public class RoundHole {
-    private double radius;
+    private final double radius;
 
     public RoundHole(double radius) {
         this.radius = radius;

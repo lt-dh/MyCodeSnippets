@@ -1,10 +1,8 @@
-package com.lt.BitMap;
+package com.lt.bit_map;
 
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.BitFieldSubCommands;
-import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.connection.RedisCommands;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
@@ -36,26 +34,18 @@ public class SignByMonth {
      * 按照月份和用户ID生成用户签到标识 UserId:Sign:560:2021-08
      *
      * @param userId 用户id
-     * @return
      */
     private String signKeyWitMouth(String userId) {
         LocalDate currentDate = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
 
-        StringBuilder builder = new StringBuilder("UserId:Sign:");
-        builder.append(userId).append(":")
-                .append(currentDate.format(formatter));
-        return builder.toString();
+        return "UserId:Sign:" + userId + ":" +
+                currentDate.format(formatter);
     }
 
     /**
      * 设置标记位
      * 标记是否签到
-     *
-     * @param key
-     * @param offset
-     * @param tag
-     * @return
      */
     public Boolean sign(String key, long offset, boolean tag) {
         return this.stringRedisTemplate.opsForValue().setBit(key, offset, tag);
@@ -66,15 +56,11 @@ public class SignByMonth {
      * 统计计数
      *
      * @param key 用户标识
-     * @return
      */
-    public long bitCount(String key) {
-        return stringRedisTemplate.execute(new RedisCallback<Long>() {
-            @Override
-            public Long doInRedis(RedisConnection redisConnection) throws DataAccessException {
-                return redisConnection.commands().bitCount(key.getBytes());
-//                return redisConnection.bitCount(key.getBytes());  过时
-            }
+    public Long bitCount(String key) {
+        return stringRedisTemplate.execute((RedisCallback<Long>) redisConnection -> {
+            RedisCommands commands = redisConnection.commands();
+            return commands.bitCount(key.getBytes());
         });
     }
 
@@ -91,34 +77,26 @@ public class SignByMonth {
     /**
      * 判断是否被标记
      *
-     * @param key
-     * @param offest
-     * @return
      */
-    public Boolean container(String key, long offest) {
-        return this.stringRedisTemplate.opsForValue().getBit(key, offest);
+    public Boolean container(String key, long offset) {
+        return this.stringRedisTemplate.opsForValue().getBit(key, offset);
     }
 
 
     /**
      * 用户今天是否签到
      *
-     * @param userId
-     * @return
      */
     public int checkSign(String userId) {
         String signKey = this.signKeyWitMouth(userId);
         int offset = dayOfMonth() - 1;
-        int value = this.container(signKey, offset) ? 1 : 0;
-        return value;
+        return Boolean.TRUE.equals(this.container(signKey, offset)) ? 1 : 0;
     }
 
 
     /**
      * 查询用户当月签到日历
      *
-     * @param userId
-     * @return
      */
     public Map<String, Boolean> querySignedInMonth(String userId) {
         LocalDate currentDate = LocalDate.now();
@@ -144,27 +122,24 @@ public class SignByMonth {
     /**
      * 用户签到
      *
-     * @param userId
-     * @return
      */
     public boolean signWithUserId(String userId) {
         int dayOfMonth = this.dayOfMonth();
         String signKey = this.signKeyWitMouth(userId);
         long offset = (long) dayOfMonth - 1;
-        boolean re = false;
-        if (Boolean.TRUE.equals(this.sign(signKey, offset, Boolean.TRUE))) {
-            re = true;
-        }
+        boolean re = Boolean.TRUE.equals(this.sign(signKey, offset, Boolean.TRUE));
 
         // 查询用户连续签到次数,最大连续次数为7天
         long continuousSignCount = this.queryContinuousSignCount(userId, 7);
+        if (continuousSignCount==7){
+//            dosomething()
+        }
         return re;
     }
 
     /**
      * 统计当前月份一共签到天数
      *
-     * @param userId
      */
     public long countSignedInDayOfMonth(String userId) {
         String signKey = this.signKeyWitMouth(userId);
@@ -175,8 +150,6 @@ public class SignByMonth {
     /**
      * 查询用户当月连续签到次数
      *
-     * @param userId
-     * @return
      */
     public long queryContinuousSignCountOfMonth(String userId) {
         int signCount = 0;
@@ -205,7 +178,6 @@ public class SignByMonth {
      * 以7天一个周期连续签到次数
      *
      * @param period 周期
-     * @return
      */
     public long queryContinuousSignCount(String userId, Integer period) {
         //查询今日之前(包括或不包括)连续签到次数
@@ -222,24 +194,24 @@ public class SignByMonth {
         return count;
     }
 
-    @PostConstruct
-    public void doIt(){
-        System.out.println("签到实现");
-        // 模拟签到 今天18号 offset从0开始
+//    @PostConstruct
+//    public void doIt(){
+//        System.out.println("签到实现");
+//        // 模拟签到 今天18号 offset从0开始
 //        stringRedisTemplate.opsForValue().setBit("UserId:Sign:250:2024-03", 17, true);
-        stringRedisTemplate.opsForValue().setBit("UserId:Sign:250:2024-03", 16, true);
-        stringRedisTemplate.opsForValue().setBit("UserId:Sign:250:2024-03", 15, true);
-        stringRedisTemplate.opsForValue().setBit("UserId:Sign:250:2024-03", 10, true);
-        stringRedisTemplate.opsForValue().setBit("UserId:Sign:250:2024-03", 9, true);
-        System.out.println("250用户今日是否已签到:" + checkSign("250"));
-
-        Map<String, Boolean> stringBooleanMap = querySignedInMonth("250");
-        System.out.println("本月签到情况:");
-        for (Map.Entry<String, Boolean> entry : stringBooleanMap.entrySet()) {
-            System.out.println(entry.getKey() + ": " + (entry.getValue() ? "√" : "-"));
-        }
-
-        System.out.println("本月一共签到:" + countSignedInDayOfMonth("250") + "天");
-        System.out.println("目前连续签到:" + queryContinuousSignCount("250", 7) + "天");
-    }
+//        stringRedisTemplate.opsForValue().setBit("UserId:Sign:250:2024-03", 16, true);
+//        stringRedisTemplate.opsForValue().setBit("UserId:Sign:250:2024-03", 15, true);
+//        stringRedisTemplate.opsForValue().setBit("UserId:Sign:250:2024-03", 10, true);
+//        stringRedisTemplate.opsForValue().setBit("UserId:Sign:250:2024-03", 9, true);
+//        System.out.println("250用户今日是否已签到:" + checkSign("250"));
+//
+//        Map<String, Boolean> stringBooleanMap = querySignedInMonth("250");
+//        System.out.println("本月签到情况:");
+//        for (Map.Entry<String, Boolean> entry : stringBooleanMap.entrySet()) {
+//            System.out.println(entry.getKey() + ": " + (entry.getValue() ? "√" : "-"));
+//        }
+//
+//        System.out.println("本月一共签到:" + countSignedInDayOfMonth("250") + "天");
+//        System.out.println("目前连续签到:" + queryContinuousSignCount("250", 7) + "天");
+//    }
 }

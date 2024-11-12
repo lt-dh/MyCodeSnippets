@@ -17,7 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RaffleMain {
 
-    private final RedisTemplate redisTemplate;
+    private final RedisTemplate<String,Integer> redisTemplate;
 
     public List<Integer> choujiang(){
         // 用户添加 可以抽出一个add方法
@@ -35,13 +35,13 @@ public class RaffleMain {
         return list;
     }
 
-    @PostConstruct
-    public void doIt(){
-        System.out.println("抽奖实现");
-        // 抽奖实现
-        List<Integer> choujiang = choujiang();
-        for (int i = 0; i < choujiang.size(); i++) {
-            System.out.println(choujiang.get(i));
-        }
-    }
+//    @PostConstruct
+//    public void doIt(){
+//        System.out.println("抽奖实现");
+//        // 抽奖实现
+//        List<Integer> choujiang = choujiang();
+//        for (int i = 0; i < choujiang.size(); i++) {
+//            System.out.println(choujiang.get(i));
+//        }
+//    }
 }
