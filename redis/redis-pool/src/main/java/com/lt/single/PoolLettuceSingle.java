@@ -21,12 +21,6 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * redis连接池
- *
- * @author liuning
- * @date 2022/4/28 15:28
- */
 public class PoolLettuceSingle {
 
     private static PoolLettuceSingle poolLettuceSingle;

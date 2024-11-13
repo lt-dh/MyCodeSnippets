@@ -1,6 +1,5 @@
 package com.lt.cluster;
 
-import com.lt.cluster.PoolLettuceCluster;
 import com.lt.config.RedisConfig;
 
 /**
