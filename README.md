@@ -12,3 +12,4 @@
 - verification-code 验证码生成
 ## mysql
 - mysql-pool mysql连接池
+- mysql-code-generator 代码生成器
