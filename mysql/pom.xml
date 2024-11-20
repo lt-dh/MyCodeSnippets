@@ -11,6 +11,7 @@
     <modules>
         <module>mysql-pool</module>
         <module>mysql-code-generate</module>
+        <module>mysql-batch-save</module>
     </modules>
 
     <properties>

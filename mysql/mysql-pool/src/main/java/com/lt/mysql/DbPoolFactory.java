@@ -4,6 +4,7 @@ import com.lt.config.MysqlConfig;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Objects;
@@ -46,7 +47,9 @@ public class DbPoolFactory {
         connection.setAutoCommit(autoCommit);
         return connection;
     }
-
+    public static DataSource getDataSource() {
+        return mysqlPool;
+    }
     public static void rollback(Connection connection) throws SQLException {
         if (connection != null) {
             connection.rollback();
