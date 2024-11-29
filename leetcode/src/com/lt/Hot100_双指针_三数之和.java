@@ -29,9 +29,6 @@ import java.util.*;
  * -105 <= nums[i] <= 105
  */
 public class Hot100_双指针_三数之和 {
-    public static void main(String[] args) {
-        threeSum(new int[]{-1, 0, 1, 2, -1, -4});
-    }
 
     // 超时
 //    public static List<List<Integer>> threeSum(int[] nums) {
