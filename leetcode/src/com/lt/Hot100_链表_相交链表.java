@@ -20,20 +20,46 @@ public class Hot100_链表_相交链表 {
         }
     }
 
+//    public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+//        HashSet<ListNode> set = new HashSet<>();
+//        ListNode res = null;
+//        while (headA != null) {
+//            set.add(headA);
+//            headA = headA.next;
+//        }
+//        while (headB != null) {
+//            if (set.contains(headB)) {
+//                res = headB;
+//                break;
+//            }
+//            headB = headB.next;
+//        }
+//        return res;
+//    }
+
     public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
-        HashSet<ListNode> set = new HashSet<>();
-        ListNode res = null;
-        while (headA != null) {
-            set.add(headA);
+        ListNode headA1 = headA;
+        ListNode headB1 = headB;
+        boolean firstA = true;
+        boolean firstB = true;
+        while (headA != headB) {
             headA = headA.next;
-        }
-        while (headB != null) {
-            if (set.contains(headB)) {
-                res = headB;
-                break;
+            if (headA == null) {
+                if (!firstA) {
+                    break;
+                }
+                firstA = false;
+                headA = headB1;
             }
             headB = headB.next;
+            if (headB == null) {
+                if (!firstB) {
+                    break;
+                }
+                firstB = false;
+                headB = headA1;
+            }
         }
-        return res;
+        return headA == headB ? headA : null;
     }
 }
